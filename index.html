@@ -28,9 +28,15 @@
         <input id="task-input" name="task" type="text" maxlength="200" placeholder="What needs to be done?" autocomplete="off">
         <label class="sr-only" for="location-input">Optional task location</label>
         <input id="location-input" name="location" type="text" maxlength="100" placeholder="Location (optional)" autocomplete="off">
+        <label class="sr-only" for="priority-input">Task priority</label>
+        <select id="priority-input" name="priority">
+          <option value="high">High priority</option>
+          <option value="medium" selected>Medium priority</option>
+          <option value="low">Low priority</option>
+        </select>
         <div class="measurement-fields">
           <label class="sr-only" for="amount-input">Optional task amount</label>
-          <input id="amount-input" name="amount" type="number" min="0" step="any" placeholder="Amount" inputmode="decimal">
+          <input id="amount-input" name="amount" type="number" min="0.01" step="any" placeholder="Goal" inputmode="decimal">
           <label class="sr-only" for="unit-input">Optional task unit</label>
           <select id="unit-input" name="unit">
             <option value="">Unit</option>

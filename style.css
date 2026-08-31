@@ -37,7 +37,7 @@ h1, h2 { margin: 0; font-family: "Manrope", sans-serif; }
 h1 { font-size: clamp(2rem, 5vw, 2.7rem); letter-spacing: -.04em; line-height: 1.1; }
 .subtitle { margin: 10px 0 0; color: var(--muted); font-size: .98rem; }
 .header-mark { display: grid; width: 50px; height: 50px; flex: 0 0 50px; place-items: center; color: var(--blue); background: var(--blue-soft); border-radius: 15px; font-size: 1.45rem; font-weight: 700; }
-.task-form { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, 1.15fr) auto; gap: 12px; }
+.task-form { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .95fr) minmax(0, 1fr) minmax(0, 1.35fr) auto; gap: 12px; }
 .task-form input, .task-form select { width: 100%; min-width: 0; padding: 15px 14px; color: var(--ink); background: #f9fbfe; border: 1px solid var(--line); border-radius: 12px; outline: none; font: inherit; transition: border-color .2s, box-shadow .2s, background .2s; }
 .task-form input:focus, .task-form select:focus { background: var(--white); border-color: var(--blue); box-shadow: 0 0 0 4px rgba(39, 116, 230, .12); }
 .task-form select { color: var(--muted); cursor: pointer; }
@@ -59,13 +59,28 @@ h2 { font-size: 1.07rem; letter-spacing: -.02em; }
 .task-checkbox { width: 20px; height: 20px; flex: 0 0 20px; margin: 0; accent-color: var(--blue); cursor: pointer; }
 .task-content { min-width: 0; flex: 1; }
 .task-text { display: block; overflow-wrap: anywhere; font-size: .95rem; line-height: 1.45; }
+.priority-label { display: inline-block; margin-top: 5px; font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.priority-high { color: #d34f5e; }
+.priority-medium { color: #b58416; }
+.priority-low { color: #5685bc; }
 .task-location { display: block; margin-top: 4px; color: var(--blue); font-size: .76rem; font-weight: 600; }
 .task-measurement { display: inline-block; margin-top: 4px; margin-left: 9px; color: #16846b; font-size: .76rem; font-weight: 600; }
 .task-location + .task-measurement { margin-left: 0; }
+.progress-section { margin-top: 12px; }
+.progress-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: .72rem; }
+.progress-header label { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.progress-input { width: 58px; padding: 4px 6px; color: var(--ink); background: var(--white); border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+.progress-input:focus { border-color: var(--blue); outline: 2px solid rgba(39, 116, 230, .12); }
+.progress-track { height: 7px; margin-top: 7px; overflow: hidden; background: #e6edf7; border-radius: 99px; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--blue), #55a0ff); border-radius: inherit; transition: width .2s ease-out; }
+.task-row[data-priority="high"] { border-left: 3px solid #e35c68; }
+.task-row[data-priority="medium"] { border-left: 3px solid #e8b84b; }
+.task-row[data-priority="low"] { border-left: 3px solid #72a6df; }
 .task-row.completed { background: #f8fafc; }
 .task-row.completed .task-text { color: #98a3b4; text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .task-row.completed .task-location { color: #9aa8bc; }
 .task-row.completed .task-measurement { color: #9aa8bc; }
+.task-row.completed .priority-label { color: #9aa8bc; }
 .delete-button { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; color: #9aa8bc; background: transparent; border-radius: 9px; font-size: 1.2rem; line-height: 1; transition: color .2s, background .2s; }
 .delete-button:hover { color: #d34f5e; background: #fff0f1; }
 .empty-state { margin: 26px 0 31px; color: var(--muted); font-size: .9rem; text-align: center; }

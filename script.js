@@ -3,6 +3,7 @@ const STORAGE_KEY = "my-tasks";
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
 const locationInput = document.querySelector("#location-input");
+const priorityInput = document.querySelector("#priority-input");
 const amountInput = document.querySelector("#amount-input");
 const unitInput = document.querySelector("#unit-input");
 const taskList = document.querySelector("#task-list");
@@ -12,7 +13,7 @@ const completedCount = document.querySelector("#completed-count");
 const incompleteCount = document.querySelector("#incomplete-count");
 const taskTotal = document.querySelector("#task-total");
 
-let tasks = loadTasks();
+let tasks = sortTasksByPriority(loadTasks());
 
 function loadTasks() {
   try {
@@ -34,6 +35,7 @@ function renderTasks() {
     const taskRow = document.createElement("li");
     taskRow.className = `task-row${task.completed ? " completed" : ""}`;
     taskRow.dataset.taskId = task.id;
+    taskRow.dataset.priority = task.priority || "medium";
 
     const checkbox = document.createElement("input");
     checkbox.className = "task-checkbox";
@@ -49,6 +51,11 @@ function renderTasks() {
     taskContent.className = "task-content";
     taskContent.append(taskText);
 
+    const priorityLabel = document.createElement("span");
+    priorityLabel.className = `priority-label priority-${task.priority || "medium"}`;
+    priorityLabel.textContent = `${task.priority || "medium"} priority`;
+    taskContent.append(priorityLabel);
+
     if (task.location) {
       const taskLocation = document.createElement("span");
       taskLocation.className = "task-location";
@@ -61,6 +68,41 @@ function renderTasks() {
       taskMeasurement.className = "task-measurement";
       taskMeasurement.textContent = `${task.amount} ${task.unit}`;
       taskContent.append(taskMeasurement);
+
+        const progress = Math.max(Number(task.progress) || 0, 0);
+      const progressSection = document.createElement("div");
+      progressSection.className = "progress-section";
+
+      const percentage = Math.round((progress / Number(task.amount)) * 100);
+      const progressHeader = document.createElement("div");
+      progressHeader.className = "progress-header";
+      const progressText = document.createElement("span");
+      progressText.textContent = `${percentage}% complete`;
+      const progressLabel = document.createElement("label");
+      progressLabel.append("Progress ");
+      const progressInput = document.createElement("input");
+      progressInput.className = "progress-input";
+      progressInput.type = "number";
+      progressInput.min = "0";
+      progressInput.step = "any";
+      progressInput.value = progress;
+      progressInput.setAttribute("aria-label", `Progress for ${task.text}`);
+      progressLabel.append(progressInput, ` ${task.unit}`);
+      progressHeader.append(progressText, progressLabel);
+
+      const progressTrack = document.createElement("div");
+      progressTrack.className = "progress-track";
+      progressTrack.setAttribute("role", "progressbar");
+      progressTrack.setAttribute("aria-valuemin", "0");
+      progressTrack.setAttribute("aria-valuemax", task.amount);
+      progressTrack.setAttribute("aria-valuenow", progress);
+      progressTrack.setAttribute("aria-label", `Progress for ${task.text}`);
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress-bar";
+        progressBar.style.width = `${Math.min((progress / Number(task.amount)) * 100, 100)}%`;
+      progressTrack.append(progressBar);
+      progressSection.append(progressHeader, progressTrack);
+      taskContent.append(progressSection);
     }
 
     const deleteButton = document.createElement("button");
@@ -84,6 +126,7 @@ function renderTasks() {
 function addTask() {
   const text = taskInput.value.trim();
   const location = locationInput.value.trim();
+  const priority = priorityInput.value;
   const amount = amountInput.value.trim();
   const unit = unitInput.value;
   formMessage.textContent = "";
@@ -101,7 +144,14 @@ function addTask() {
     return;
   }
 
-  tasks.unshift({ id: crypto.randomUUID(), text, location, amount, unit, completed: false });
+  if (amount && Number(amount) <= 0) {
+    formMessage.textContent = "The goal must be greater than zero.";
+    amountInput.focus();
+    return;
+  }
+
+  tasks.unshift({ id: crypto.randomUUID(), text, location, amount, unit, progress: "0", priority, completed: false });
+  tasks = sortTasksByPriority(tasks);
   saveTasks();
   renderTasks();
   taskForm.reset();
@@ -123,6 +173,23 @@ taskList.addEventListener("change", (event) => {
   renderTasks();
 });
 
+taskList.addEventListener("input", (event) => {
+  if (!event.target.matches(".progress-input")) return;
+  const taskRow = event.target.closest(".task-row");
+  const task = tasks.find((item) => item.id === taskRow.dataset.taskId);
+  if (!task) return;
+
+    const progress = Math.max(Number(event.target.value) || 0, 0);
+  task.progress = String(progress);
+  event.target.value = progress;
+  const percentage = (progress / Number(task.amount)) * 100;
+    taskRow.querySelector(".progress-header > span").textContent = `${Math.round(percentage)}% complete`;
+  const progressTrack = taskRow.querySelector(".progress-track");
+  progressTrack.setAttribute("aria-valuenow", progress);
+    progressTrack.querySelector(".progress-bar").style.width = `${Math.min(percentage, 100)}%`;
+  saveTasks();
+});
+
 taskList.addEventListener("click", (event) => {
   const deleteButton = event.target.closest('[data-action="delete"]');
   if (!deleteButton) return;
@@ -133,3 +200,15 @@ taskList.addEventListener("click", (event) => {
 });
 
 renderTasks();
+
+function sortTasksByPriority(taskItems) {
+  const priorityRank = { high: 3, medium: 2, low: 1 };
+  return taskItems
+    .map((task, index) => ({ task, index }))
+    .sort((first, second) => {
+      const firstRank = priorityRank[first.task.priority] || priorityRank.medium;
+      const secondRank = priorityRank[second.task.priority] || priorityRank.medium;
+      return secondRank - firstRank || first.index - second.index;
+    })
+    .map(({ task }) => task);
+}
