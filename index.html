@@ -55,8 +55,14 @@
       <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
 
       <div class="list-heading">
-        <h2>Today’s list</h2>
-        <span class="task-total" id="task-total">0 tasks</span>
+        <div>
+          <h2 id="list-title">Today’s list</h2>
+          <span class="task-total" id="task-total">0 tasks</span>
+        </div>
+        <div class="date-filter">
+          <label for="view-date">Viewing date</label>
+          <input id="view-date" type="date">
+        </div>
       </div>
       <ul class="task-list" id="task-list" aria-live="polite"></ul>
       <p class="empty-state" id="empty-state">Your task list is clear. Add something to get started.</p>

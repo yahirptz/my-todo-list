@@ -12,13 +12,16 @@ const formMessage = document.querySelector("#form-message");
 const completedCount = document.querySelector("#completed-count");
 const incompleteCount = document.querySelector("#incomplete-count");
 const taskTotal = document.querySelector("#task-total");
+const listTitle = document.querySelector("#list-title");
+const viewDateInput = document.querySelector("#view-date");
 
+let selectedDate = getLocalDate();
 let tasks = sortTasksByPriority(loadTasks());
 
 function loadTasks() {
   try {
     const savedTasks = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Array.isArray(savedTasks) ? savedTasks : [];
+    return Array.isArray(savedTasks) ? savedTasks.map((task) => ({ ...task, date: task.date || getLocalDate() })) : [];
   } catch (error) {
     return [];
   }
@@ -30,8 +33,9 @@ function saveTasks() {
 
 function renderTasks() {
   taskList.replaceChildren();
+  const visibleTasks = sortTasksByPriority(tasks.filter((task) => task.date === selectedDate));
 
-  tasks.forEach((task) => {
+  visibleTasks.forEach((task) => {
     const taskRow = document.createElement("li");
     taskRow.className = `task-row${task.completed ? " completed" : ""}`;
     taskRow.dataset.taskId = task.id;
@@ -116,11 +120,13 @@ function renderTasks() {
     taskList.append(taskRow);
   });
 
-  const completed = tasks.filter((task) => task.completed).length;
+  const completed = visibleTasks.filter((task) => task.completed).length;
   completedCount.textContent = completed;
-  incompleteCount.textContent = tasks.length - completed;
-  taskTotal.textContent = `${tasks.length} ${tasks.length === 1 ? "task" : "tasks"}`;
-  emptyState.hidden = tasks.length > 0;
+  incompleteCount.textContent = visibleTasks.length - completed;
+  taskTotal.textContent = `${visibleTasks.length} ${visibleTasks.length === 1 ? "task" : "tasks"}`;
+  listTitle.textContent = selectedDate === getLocalDate() ? "Today’s list" : `Tasks for ${formatDate(selectedDate)}`;
+  emptyState.textContent = selectedDate === getLocalDate() ? "Your task list is clear. Add something to get started." : "No tasks saved for this date.";
+  emptyState.hidden = visibleTasks.length > 0;
 }
 
 function addTask() {
@@ -150,7 +156,7 @@ function addTask() {
     return;
   }
 
-  tasks.unshift({ id: crypto.randomUUID(), text, location, amount, unit, progress: "0", priority, completed: false });
+  tasks.unshift({ id: crypto.randomUUID(), text, location, amount, unit, progress: "0", priority, date: getLocalDate(), completed: false });
   tasks = sortTasksByPriority(tasks);
   saveTasks();
   renderTasks();
@@ -161,6 +167,12 @@ function addTask() {
 taskForm.addEventListener("submit", (event) => {
   event.preventDefault();
   addTask();
+});
+
+viewDateInput.value = selectedDate;
+viewDateInput.addEventListener("change", () => {
+  selectedDate = viewDateInput.value || getLocalDate();
+  renderTasks();
 });
 
 taskList.addEventListener("change", (event) => {
@@ -200,6 +212,20 @@ taskList.addEventListener("click", (event) => {
 });
 
 renderTasks();
+
+function getLocalDate() {
+  const today = new Date();
+  const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+  return localToday.toISOString().split("T")[0];
+}
+
+function formatDate(dateString) {
+  return new Date(`${dateString}T00:00:00`).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+}
 
 function sortTasksByPriority(taskItems) {
   const priorityRank = { high: 3, medium: 2, low: 1 };
