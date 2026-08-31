@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple, polished task manager for keeping track of your day.">
+  <title>My Tasks | Task Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="todo-card" aria-labelledby="page-title">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Your day, organized</p>
+          <h1 id="page-title">My Tasks</h1>
+          <p class="subtitle">Keep your priorities moving forward.</p>
+        </div>
+        <div class="header-mark" aria-hidden="true">✓</div>
+      </header>
+
+      <form class="task-form" id="task-form">
+        <label class="sr-only" for="task-input">Add a new task</label>
+        <input id="task-input" name="task" type="text" maxlength="200" placeholder="What needs to be done?" autocomplete="off">
+        <button class="add-button" type="submit">
+          <span aria-hidden="true">+</span>
+          Add Task
+        </button>
+      </form>
+      <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+
+      <div class="list-heading">
+        <h2>Today’s list</h2>
+        <span class="task-total" id="task-total">0 tasks</span>
+      </div>
+      <ul class="task-list" id="task-list" aria-live="polite"></ul>
+      <p class="empty-state" id="empty-state">Your task list is clear. Add something to get started.</p>
+
+      <footer class="stats" aria-label="Task statistics">
+        <div class="stat-item">
+          <span class="stat-icon incomplete-icon" aria-hidden="true">○</span>
+          <span><strong id="incomplete-count">0</strong> incomplete</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-icon complete-icon" aria-hidden="true">✓</span>
+          <span><strong id="completed-count">0</strong> completed</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
