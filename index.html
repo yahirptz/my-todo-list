@@ -26,6 +26,21 @@
       <form class="task-form" id="task-form">
         <label class="sr-only" for="task-input">Add a new task</label>
         <input id="task-input" name="task" type="text" maxlength="200" placeholder="What needs to be done?" autocomplete="off">
+        <label class="sr-only" for="location-input">Optional task location</label>
+        <input id="location-input" name="location" type="text" maxlength="100" placeholder="Location (optional)" autocomplete="off">
+        <div class="measurement-fields">
+          <label class="sr-only" for="amount-input">Optional task amount</label>
+          <input id="amount-input" name="amount" type="number" min="0" step="any" placeholder="Amount" inputmode="decimal">
+          <label class="sr-only" for="unit-input">Optional task unit</label>
+          <select id="unit-input" name="unit">
+            <option value="">Unit</option>
+            <option value="hours">Hours</option>
+            <option value="calories">Calories</option>
+            <option value="liters">Liters</option>
+            <option value="miles">Miles</option>
+            <option value="kilometers">Kilometers</option>
+          </select>
+        </div>
         <button class="add-button" type="submit">
           <span aria-hidden="true">+</span>
           Add Task

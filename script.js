@@ -2,6 +2,9 @@ const STORAGE_KEY = "my-tasks";
 
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
+const locationInput = document.querySelector("#location-input");
+const amountInput = document.querySelector("#amount-input");
+const unitInput = document.querySelector("#unit-input");
 const taskList = document.querySelector("#task-list");
 const emptyState = document.querySelector("#empty-state");
 const formMessage = document.querySelector("#form-message");
@@ -42,6 +45,24 @@ function renderTasks() {
     taskText.className = "task-text";
     taskText.textContent = task.text;
 
+    const taskContent = document.createElement("div");
+    taskContent.className = "task-content";
+    taskContent.append(taskText);
+
+    if (task.location) {
+      const taskLocation = document.createElement("span");
+      taskLocation.className = "task-location";
+      taskLocation.textContent = `At ${task.location}`;
+      taskContent.append(taskLocation);
+    }
+
+    if (task.amount !== undefined && task.amount !== "" && task.unit) {
+      const taskMeasurement = document.createElement("span");
+      taskMeasurement.className = "task-measurement";
+      taskMeasurement.textContent = `${task.amount} ${task.unit}`;
+      taskContent.append(taskMeasurement);
+    }
+
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-button";
     deleteButton.type = "button";
@@ -49,7 +70,7 @@ function renderTasks() {
     deleteButton.setAttribute("aria-label", `Delete ${task.text}`);
     deleteButton.innerHTML = "&times;";
 
-    taskRow.append(checkbox, taskText, deleteButton);
+    taskRow.append(checkbox, taskContent, deleteButton);
     taskList.append(taskRow);
   });
 
@@ -62,6 +83,9 @@ function renderTasks() {
 
 function addTask() {
   const text = taskInput.value.trim();
+  const location = locationInput.value.trim();
+  const amount = amountInput.value.trim();
+  const unit = unitInput.value;
   formMessage.textContent = "";
 
   if (!text) {
@@ -70,7 +94,14 @@ function addTask() {
     return;
   }
 
-  tasks.unshift({ id: crypto.randomUUID(), text, completed: false });
+  if ((amount && !unit) || (!amount && unit)) {
+    formMessage.textContent = "Add both an amount and a unit, or leave both blank.";
+    if (!amount) amountInput.focus();
+    else unitInput.focus();
+    return;
+  }
+
+  tasks.unshift({ id: crypto.randomUUID(), text, location, amount, unit, completed: false });
   saveTasks();
   renderTasks();
   taskForm.reset();
